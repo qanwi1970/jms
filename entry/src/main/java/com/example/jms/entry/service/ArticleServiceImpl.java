@@ -29,6 +29,6 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public void addArticle(Article article) {
-        articleSender.sendArticle(article);
+        articleSender.sendArticleForAdd(article);
     }
 }
