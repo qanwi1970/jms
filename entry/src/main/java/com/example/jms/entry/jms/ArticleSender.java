@@ -1,8 +1,7 @@
 package com.example.jms.entry.jms;
 
 import com.example.jms.entry.model.Article;
-import com.example.jms.entry.model.ArticleWrapper;
-import com.example.jms.entry.model.MessageWrapper;
+import com.example.jms.entry.model.CrudWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +22,9 @@ public class ArticleSender {
 
     public void sendArticleForAdd(Article article) {
         log.debug("Sending a new article to be added");
-        ArticleWrapper articleWrapper = new ArticleWrapper();
-        articleWrapper.setAction("add");
-        articleWrapper.setArticle(article);
+        CrudWrapper<Article> articleWrapper = new CrudWrapper<>();
+        articleWrapper.setAction(CrudWrapper.Action.Create);
+        articleWrapper.setPayload(article);
         String message;
         try {
             message = mapper.writeValueAsString(articleWrapper);

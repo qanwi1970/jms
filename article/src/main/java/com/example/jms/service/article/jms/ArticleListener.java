@@ -1,6 +1,9 @@
 package com.example.jms.service.article.jms;
 
-import com.example.jms.service.article.jms.messagetypes.ArticleWrapper;
+import com.example.jms.service.article.jms.messagetypes.Article;
+import com.example.jms.service.article.jms.messagetypes.CrudWrapper;
+import com.example.jms.service.article.service.ArticleService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
@@ -13,15 +16,17 @@ import java.io.IOException;
 public class ArticleListener {
 
     private final ObjectMapper mapper;
+    private final ArticleService articleService;
 
-    public ArticleListener() {
+    public ArticleListener(ArticleService articleService) {
+        this.articleService = articleService;
         mapper = new ObjectMapper();
     }
 
     @JmsListener(destination = "article.queue", containerFactory = "containerFactory")
     public void receiveArticle(String received) throws IOException {
         log.info("Received article: {}", received);
-        ArticleWrapper articleMessage = mapper.readValue(received, ArticleWrapper.class);
-        log.debug("Deserialized message: {}", articleMessage);
+        CrudWrapper<Article> articleMessage = mapper.readValue(received, new TypeReference<CrudWrapper<Article>>(){});
+        articleService.processArticleMessage(articleMessage);
     }
 }
