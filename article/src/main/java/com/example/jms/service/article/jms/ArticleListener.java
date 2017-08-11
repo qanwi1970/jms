@@ -1,6 +1,6 @@
 package com.example.jms.service.article.jms;
 
-import com.example.jms.service.article.jms.messagetypes.Article;
+import com.example.jms.service.article.jms.messagetypes.ArticleMessage;
 import com.example.jms.service.article.jms.messagetypes.CrudWrapper;
 import com.example.jms.service.article.service.ArticleService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -26,7 +26,7 @@ public class ArticleListener {
     @JmsListener(destination = "article.queue", containerFactory = "containerFactory")
     public void receiveArticle(String received) throws IOException {
         log.info("Received article: {}", received);
-        CrudWrapper<Article> articleMessage = mapper.readValue(received, new TypeReference<CrudWrapper<Article>>(){});
+        CrudWrapper<ArticleMessage> articleMessage = mapper.readValue(received, new TypeReference<CrudWrapper<ArticleMessage>>(){});
         articleService.processArticleMessage(articleMessage);
     }
 }

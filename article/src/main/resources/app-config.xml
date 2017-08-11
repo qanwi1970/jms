@@ -36,4 +36,6 @@
         <property name="typeIdPropertyName" value="_type" />
     </bean>
 
+    <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
+
 </beans>

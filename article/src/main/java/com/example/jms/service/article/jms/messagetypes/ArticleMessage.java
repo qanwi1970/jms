@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Article {
+public class ArticleMessage {
 
     private int articleId;
 
