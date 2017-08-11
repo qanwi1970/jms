@@ -1,9 +1,8 @@
-package com.example.jms.entry.model;
+package com.example.jms.service.article.jms.messagetypes;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.stereotype.Component;
+
 
 @Component
 @Data
@@ -18,5 +17,7 @@ public class Article {
     private String category;
 
     private String body;
+
+    private boolean published;
 
 }

@@ -21,9 +21,9 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<Article> getAllArticles() {
         List<Article> list = new ArrayList<>();
-        list.add(new Article(1, "Building a Binary Clock", "IoT"));
-        list.add(new Article(2, "Systematically Tackling Performance Issues", "Programming"));
-        list.add(new Article(3, "Allomancy in D20: Soothing", "Gaming"));
+        list.add(new Article(1, "Building a Binary Clock", "IoT", "body text"));
+        list.add(new Article(2, "Systematically Tackling Performance Issues", "Programming", "body text"));
+        list.add(new Article(3, "Allomancy in D20: Soothing", "Gaming", "body text"));
         return list;
     }
 

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.co.jemos.podam.api.PodamFactory;
 
 import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
@@ -45,7 +44,7 @@ public class PerformanceController {
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < size; i++) {
             int index = ThreadLocalRandom.current().nextInt(0, 100);
-            articleSender.sendArticle(articles[index]);
+            articleSender.sendArticleForAdd(articles[index]);
         }
         long diff = System.currentTimeMillis() - startTime;
         return "Sent " + size + " messages in " + diff + " milliseconds";
@@ -60,7 +59,7 @@ public class PerformanceController {
                 @Override
                 public void run() {
                     int index = ThreadLocalRandom.current().nextInt(0, 100);
-                    articleSender.sendArticle(articles[index]);
+                    articleSender.sendArticleForAdd(articles[index]);
                 }
             }, interval, interval);
             return "Sending messages every " + interval + " milliseconds until told to stop";

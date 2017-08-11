@@ -1,4 +1,4 @@
-package com.example.jms.entry.model;
+package com.example.jms.service.article.jms.messagetypes;
 
 import lombok.Data;
 
