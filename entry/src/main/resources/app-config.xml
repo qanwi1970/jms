@@ -25,17 +25,12 @@
 
     <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
         <constructor-arg ref="cachingConnectionFactory" />
-        <!--<property name="messageConverter" ref="messageConverter" />-->
-    </bean>
-
-    <bean id="messageConverter" class="org.springframework.jms.support.converter.MappingJackson2MessageConverter">
-        <property name="targetType" value="TEXT" />
-        <property name="typeIdPropertyName" value="_type" />
     </bean>
 
     <bean name="jackson2ObjectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
-        <property name="indentOutput" value="true"/>
+        <property name="indentOutput" value="false"/>
     </bean>
+
     <mvc:annotation-driven>
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">

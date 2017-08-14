@@ -15,9 +15,9 @@ public class ArticleSender {
     private final JmsTemplate jmsTemplate;
     private final ObjectMapper mapper;
 
-    public ArticleSender(JmsTemplate jmsTemplate) {
+    public ArticleSender(JmsTemplate jmsTemplate, ObjectMapper objectMapper) {
         this.jmsTemplate = jmsTemplate;
-        mapper = new ObjectMapper();
+        mapper = objectMapper;
     }
 
     public void sendArticleForAdd(Article article) {

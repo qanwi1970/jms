@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -24,7 +25,8 @@ public class ArticleListener {
     }
 
     @JmsListener(destination = "article.queue", containerFactory = "containerFactory")
-    public void receiveArticle(String received) throws IOException {
+    public void receiveArticle(Message<String> message) throws IOException {
+        String received = message.getPayload();
         log.info("Received article: {}", received);
         CrudWrapper<ArticleMessage> articleMessage = mapper.readValue(received, new TypeReference<CrudWrapper<ArticleMessage>>(){});
         articleService.processArticleMessage(articleMessage);

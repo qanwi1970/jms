@@ -35,7 +35,7 @@ public class ArticleController {
     @PostMapping()
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void addArticle(@RequestBody Article article) {
-        log.debug("Adding an article");
+        log.debug("Adding an article {}", article);
         articleService.addArticle(article);
     }
 }

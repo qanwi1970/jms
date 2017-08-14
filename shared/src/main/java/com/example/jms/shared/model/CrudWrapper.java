@@ -1,11 +1,9 @@
-package com.example.jms.entry.model;
+package com.example.jms.shared.model;
 
 import lombok.Data;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
-@Component
 @Data
 public class CrudWrapper<T> implements Serializable {
 

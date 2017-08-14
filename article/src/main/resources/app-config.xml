@@ -13,12 +13,12 @@
     <bean id="containerFactory" class="org.springframework.jms.config.DefaultJmsListenerContainerFactory">
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="concurrency" value="2-10" />
-        <!--<property name="messageConverter" ref="messageConverter" />-->
     </bean>
 
     <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
         <constructor-arg value="${activemq.host}:${activemq.port}" />
         <property name="useAsyncSend" value="true" />
+        <property name="trustAllPackages" value="true" />
     </bean>
 
     <bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
@@ -28,12 +28,6 @@
 
     <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
         <constructor-arg ref="cachingConnectionFactory" />
-        <property name="messageConverter" ref="messageConverter" />
-    </bean>
-
-    <bean id="messageConverter" class="org.springframework.jms.support.converter.MappingJackson2MessageConverter">
-        <property name="targetType" value="TEXT" />
-        <property name="typeIdPropertyName" value="_type" />
     </bean>
 
     <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
