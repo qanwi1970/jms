@@ -8,6 +8,9 @@ import com.example.jms.service.article.repositories.ArticleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Slf4j
 public class ArticleServiceImpl implements ArticleService {
@@ -21,24 +24,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void processArticleMessage(CrudWrapper<ArticleMessage> articleMessage) {
-        switch (articleMessage.getAction()) {
-            case Create:
-                addArticle(articleMessage.getPayload());
-                break;
-            case Read:
-                break;
-            case Update:
-                break;
-            case Delete:
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public Article addArticle(ArticleMessage articleMessage) {
+    public Article saveArticle(ArticleMessage articleMessage) {
         Article articleEntity = Article.builder()
                 .articleId(articleMessage.getArticleId())
                 .title(articleMessage.getTitle())
@@ -50,5 +36,18 @@ public class ArticleServiceImpl implements ArticleService {
         log.debug(savedArticle.toString());
         articleAnnouncer.announceArticle(articleMessage);
         return savedArticle;
+    }
+
+    @Override
+    public List<ArticleMessage> getArticles() {
+        return articleRepository.findAll().stream()
+                .map(article -> ArticleMessage.builder()
+                        .articleId(article.getArticleId())
+                        .category(article.getCategory())
+                        .title(article.getTitle())
+                        .body(article.getBody())
+                        .published(article.isPublished())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

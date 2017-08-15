@@ -1,34 +1,60 @@
 package com.example.jms.service.article.jms;
 
 import com.example.jms.service.article.jms.messagetypes.ArticleMessage;
-import com.example.jms.service.article.jms.messagetypes.CrudWrapper;
 import com.example.jms.service.article.service.ArticleService;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.activemq.command.ActiveMQTempDestination;
+import org.apache.activemq.command.ActiveMQTempQueue;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
+import javax.jms.Destination;
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Component
 public class ArticleListener {
 
     private final ObjectMapper mapper;
+    private final JmsTemplate jmsTemplate;
     private final ArticleService articleService;
 
-    public ArticleListener(ArticleService articleService) {
+    public ArticleListener(ArticleService articleService, ObjectMapper objectMapper, JmsTemplate jmsTemplate) {
         this.articleService = articleService;
-        mapper = new ObjectMapper();
+        this.mapper = objectMapper;
+        this.jmsTemplate = jmsTemplate;
     }
 
-    @JmsListener(destination = "article.queue", containerFactory = "containerFactory")
-    public void receiveArticle(Message<String> message) throws IOException {
+    @JmsListener(destination = "queue.article", containerFactory = "containerFactory", selector = "operation = 'create'")
+    public void createArticle(Message<String> message) throws IOException {
         String received = message.getPayload();
-        log.info("Received article: {}", received);
-        CrudWrapper<ArticleMessage> articleMessage = mapper.readValue(received, new TypeReference<CrudWrapper<ArticleMessage>>(){});
-        articleService.processArticleMessage(articleMessage);
+        log.info("Received article for create: {}", received);
+        ArticleMessage articleMessage = mapper.readValue(received, ArticleMessage.class);
+        articleService.saveArticle(articleMessage);
+    }
+
+    @JmsListener(destination = "queue.article", containerFactory = "containerFactory", selector = "operation = 'update'")
+    public void updateArticle(Message<String> message) throws IOException {
+        String received = message.getPayload();
+        log.info("Received article for update: {}", received);
+        ArticleMessage articleMessage = mapper.readValue(received, ArticleMessage.class);
+        articleService.saveArticle(articleMessage);
+    }
+
+    @JmsListener(destination = "queue.article", containerFactory = "containerFactory", selector = "operation = 'read'")
+    public void readArticles(Message<String> message) throws IOException {
+        log.info("Getting articles");
+        log.debug("Message Headers: {}", message.getHeaders());
+        log.debug("Message Payload: {}", message.getPayload());
+        List<ArticleMessage> articles = articleService.getArticles();
+        String articleJson = mapper.writeValueAsString(articles);
+        // So far, this is ugly. Not only do I have to rely on an ActiveMQ type, but I also have to strip "temp-queue://"
+        // from the beginning of the queue name
+        Destination replyTo = new ActiveMQTempQueue(message.getHeaders().get("jms_replyTo").toString().substring(13));
+        jmsTemplate.convertAndSend(replyTo, articleJson);
     }
 }

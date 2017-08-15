@@ -5,6 +5,8 @@ import com.example.jms.entry.model.Article;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.jms.JMSException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,11 +22,15 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<Article> getAllArticles() {
-        List<Article> list = new ArrayList<>();
-        list.add(new Article(1, "Building a Binary Clock", "IoT", "body text"));
-        list.add(new Article(2, "Systematically Tackling Performance Issues", "Programming", "body text"));
-        list.add(new Article(3, "Allomancy in D20: Soothing", "Gaming", "body text"));
-        return list;
+        try {
+            return articleSender.getArticles();
+        } catch (JMSException e) {
+            log.error("Error receiving message", e);
+            return new ArrayList<>();
+        } catch (IOException e) {
+            log.error("Error parsing message body", e);
+            return new ArrayList<>();
+        }
     }
 
     @Override

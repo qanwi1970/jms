@@ -25,6 +25,7 @@
 
     <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
         <constructor-arg ref="cachingConnectionFactory" />
+        <!--<property name="receiveTimeout" value="30000" />-->
     </bean>
 
     <bean name="jackson2ObjectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
