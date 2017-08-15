@@ -52,9 +52,7 @@ public class ArticleListener {
         log.debug("Message Payload: {}", message.getPayload());
         List<ArticleMessage> articles = articleService.getArticles();
         String articleJson = mapper.writeValueAsString(articles);
-        // So far, this is ugly. Not only do I have to rely on an ActiveMQ type, but I also have to strip "temp-queue://"
-        // from the beginning of the queue name
-        Destination replyTo = new ActiveMQTempQueue(message.getHeaders().get("jms_replyTo").toString().substring(13));
-        jmsTemplate.convertAndSend(replyTo, articleJson);
+        // It seems I shouldn't have to strip the beginning of the queue name
+        jmsTemplate.convertAndSend(message.getHeaders().get("jms_replyTo").toString().substring(13), articleJson);
     }
 }

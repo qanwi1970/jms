@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.co.jemos.podam.api.PodamFactory;
 
 import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
@@ -31,7 +33,7 @@ public class PerformanceController {
 
     @PostConstruct
     public void init() {
-        log.debug("Building Article array");
+        log.info("Building Article array");
         for (int i = 0; i < 100; i++) {
             articles[i] = podamFactory.manufacturePojo(Article.class);
         }
@@ -40,7 +42,7 @@ public class PerformanceController {
     // localhost:8080/api/performance/batch?size=10000
     @PostMapping("batch")
     public String sendBatch(@RequestParam int size) {
-        log.debug("Sending {} messages", size);
+        log.info("Sending {} messages", size);
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < size; i++) {
             int index = ThreadLocalRandom.current().nextInt(0, 100);
@@ -54,7 +56,7 @@ public class PerformanceController {
     public String sendContinuous(@RequestParam String command, @RequestParam(required = false) int interval) {
         if (command.equalsIgnoreCase("start")) {
             if (interval <= 0) throw new IllegalArgumentException("Interval must be a positive, non-zero number");
-            log.debug("Starting to send messages every {} milliseconds", interval);
+            log.info("Starting to send messages every {} milliseconds", interval);
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
@@ -64,9 +66,20 @@ public class PerformanceController {
             }, interval, interval);
             return "Sending messages every " + interval + " milliseconds until told to stop";
         } else {
-            log.debug("Stopping timer");
+            log.info("Stopping timer");
             timer.cancel();
             return "Message sending stopped";
         }
+    }
+
+    @PostMapping("replyto")
+    public String sendReplyTo(@RequestParam int size) throws IOException, JMSException {
+        log.info("Sending {} synchronous requests", size);
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < size; i++) {
+            articleSender.getArticles();
+        }
+        long diff = System.currentTimeMillis() - startTime;
+        return "Requested " + size + " messages in " + diff + " milliseconds";
     }
 }
